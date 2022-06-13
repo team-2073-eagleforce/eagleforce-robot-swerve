@@ -1,0 +1,9 @@
+[
+  {
+    "artifact": "frcJava (in project eagleforce-robot-swerve)",
+    "target": "roborio",
+    "debugfile": "frcJava_roborio.debugconfig",
+    "project": "eagleforce-robot-swerve",
+    "language": "java"
+  }
+]
