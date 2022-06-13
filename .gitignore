@@ -1,0 +1,24 @@
+# Build files #
+build/
+out/
+target/
+
+# IDE #
+.idea/
+
+# MAC #
+.DS_Store
+
+# Gradle #
+.gradle/
+.gradle/buildOutputCleanup/
+gradle-app.setting
+.gradletasknamecache
+eagleforce-robot-2020-mainbot.iws
+IdeaProjects.eagleforce-robot-2020-mainbot.iml
+IdeaProjects.eagleforce-robot-2020-mainbot.main.iml
+IdeaProjects.eagleforce-robot-2020-mainbot.test.iml
+# Except #
+!gradle-wrapper.jar
+/imgui.ini
+.idea 
