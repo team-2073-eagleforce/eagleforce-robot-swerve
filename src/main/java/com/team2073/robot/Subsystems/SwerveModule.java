@@ -39,7 +39,6 @@ public class SwerveModule {
         this.steerMotor = steerMotor;
         this.canCoder = canCoder;
         this.offset = offset;
-        System.out.println("auduisyad");
 
         TalonFXConfiguration angleTalonFXConfiguration = new TalonFXConfiguration();
 

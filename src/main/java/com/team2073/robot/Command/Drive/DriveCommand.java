@@ -21,7 +21,6 @@ public class DriveCommand extends CommandBase {
 
     @Override
     public void execute() {
-        System.out.println("hskjahdguikajshdiuashdjkhaskjdhjkashdkjsahkjdhskjahdjk");
         final double xSpeed = -controller.getRawAxis(0) * DrivetrainSubsystem.maxSpeed;
         final double ySpeed = -controller.getRawAxis(1) * DrivetrainSubsystem.maxSpeed;
         final double rot = -controller.getRawAxis(3) * DrivetrainSubsystem.maxAngularSpeed;
