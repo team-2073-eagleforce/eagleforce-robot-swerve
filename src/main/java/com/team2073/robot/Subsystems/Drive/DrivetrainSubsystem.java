@@ -1,7 +1,9 @@
 package com.team2073.robot.Subsystems.Drive;
 
+import com.team2073.common.util.ConversionUtil;
 import com.team2073.robot.AppConstants;
 import com.team2073.robot.ApplicationContext;
+import com.team2073.robot.MotorSimProfiles.PhysicsSim;
 import com.team2073.robot.Subsystems.SwerveModule;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -14,9 +16,13 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.simulation.REVPHSim;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.team2073.robot.AppConstants.DriveConstants.*;
 import static com.team2073.robot.AppConstants.AutoConstants.*;
@@ -34,10 +40,66 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
     public static PigeonIMU gyro = new PigeonIMU(51);
 
+    private double m_yawValue;
 
+    Field2d m_fieldSim = appCTX.getM_fieldSim();
 
+    Pose2d[] m_modulePose = {
+            new Pose2d(),
+            new Pose2d(),
+            new Pose2d(),
+            new Pose2d()
+    };
 
     private SwerveDriveOdometry m_odometry = new SwerveDriveOdometry(kinematics, Rotation2d.fromDegrees(getHeading()));
+
+
+
+    /**
+     * Plot the current trajectory using Field2d
+     */
+    public void showCurrentTrajectory(Trajectory trajectory) {
+        var trajectoryStates = new ArrayList<Pose2d>();
+
+        trajectoryStates.addAll(trajectory.getStates().stream()
+                .map(state -> state.poseMeters)
+                .collect(Collectors.toList()));
+
+        m_fieldSim.getObject("Trajectory").setPoses(trajectoryStates);
+    }
+
+    @Override
+    public void simulationPeriodic() {
+        PhysicsSim.getInstance().run();
+        SwerveModuleState[] moduleStates = new SwerveModuleState[modules.length];
+
+        for ( int i = 0; i < modules.length; i++) {
+            modules[i].simulationPeriodic(0.02);
+            moduleStates[i] = modules[i].getState();
+
+            var modulePositionFromChassis = kModulePositions[i]
+                    .rotateBy(Rotation2d.fromDegrees(getHeading()))
+                    .plus(getPose().getTranslation());
+
+//            m_modulePose[i] = new Pose2d(modulePositionFromChassis,modules[i].getState().angle.plus(getPose().getRotation()));
+            m_modulePose[i] = new Pose2d(modulePositionFromChassis,modules[i].getAngle());
+        }
+
+        ChassisSpeeds chassisSpeed = kinematics.toChassisSpeeds(moduleStates);
+        double chassisRotationSpeed = chassisSpeed.omegaRadiansPerSecond;
+
+        m_yawValue += chassisRotationSpeed * 0.02;
+        gyro.setFusedHeading(-ConversionUtil.radiansToDegrees(m_yawValue));
+//        gyro.setYaw(-ConversionUtil.radiansToDegrees(m_yawValue));
+//        gyro.setCompassAngle(-ConversionUtil.radiansToDegrees(m_yawValue));
+
+        m_fieldSim.setRobotPose(getPose());
+        m_fieldSim.getObject("Swerve Modules").setPoses(m_modulePose);
+
+//        if (getPose().getX() < 0 || getPose().getY() < 0 || getPose().getX() > 16 || getPose().getY() > 9) {
+//            resetOdometry(new Pose2d(0,0, Rotation2d.fromDegrees(getHeading())));
+//        }
+    }
 
     private SwerveModule[] modules = new SwerveModule[] {
             new SwerveModule(appCTX.getFrontLeftDriveMotor(), appCTX.getFrontLeftSteerMotor(), appCTX.getFrontLeftEncoder(), Rotation2d.fromDegrees(frontLeftOffset)),

@@ -1,39 +1,43 @@
 package com.team2073.robot;
 
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.sensors.CANCoder;
 import com.ctre.phoenix.sensors.PigeonIMU;
 import com.team2073.common.CommonConstants;
 import com.team2073.robot.Subsystems.Drive.DrivetrainSubsystem;
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 
 public class ApplicationContext {
     private static ApplicationContext instance;
 
     //Front Left Module
-    private TalonFX frontLeftSteerMotor;
-    private TalonFX frontLeftDriveMotor;
+    private WPI_TalonFX frontLeftSteerMotor;
+    private WPI_TalonFX frontLeftDriveMotor;
     private CANCoder frontLeftEncoder;
 
     //Front Rigth Module
-    private TalonFX frontRightSteerMotor;
-    private TalonFX frontRightDriveMotor;
+    private WPI_TalonFX frontRightSteerMotor;
+    private WPI_TalonFX frontRightDriveMotor;
     private CANCoder frontRightEncoder;
 
     //Back Left Module
-    private TalonFX backLeftSteerMotor;
-    private TalonFX backLeftDriveMotor;
+    private WPI_TalonFX backLeftSteerMotor;
+    private WPI_TalonFX backLeftDriveMotor;
     private CANCoder backLeftEncoder;
 
     //Back Right Module
-    private TalonFX backRightSteerMotor;
-    private TalonFX backRightDriveMotor;
+    private WPI_TalonFX backRightSteerMotor;
+    private WPI_TalonFX backRightDriveMotor;
     private CANCoder backRightEncoder;
 
     private PigeonIMU gyro;
 
     private DrivetrainSubsystem drivetrainSubsystem;
+
+    Field2d m_fieldSim;
 
     private Joystick controller;
 
@@ -46,58 +50,58 @@ public class ApplicationContext {
         return instance;
     }
 
-    public TalonFX getFrontLeftSteerMotor() {
+    public WPI_TalonFX getFrontLeftSteerMotor() {
         if(frontLeftSteerMotor == null) {
-            frontLeftSteerMotor = new TalonFX(constants.FRONT_LEFT_STEER_PORT);
+            frontLeftSteerMotor = new WPI_TalonFX(constants.FRONT_LEFT_STEER_PORT);
         }
         return frontLeftSteerMotor;
     }
 
-    public TalonFX getFrontRightSteerMotor() {
+    public WPI_TalonFX getFrontRightSteerMotor() {
         if(frontRightSteerMotor == null) {
-            frontRightSteerMotor = new TalonFX(constants.FRONT_RIGHT_STEER_PORT);
+            frontRightSteerMotor = new WPI_TalonFX(constants.FRONT_RIGHT_STEER_PORT);
         }
         return frontRightSteerMotor;
     }
 
-    public TalonFX getBackLeftSteerMotor() {
+    public WPI_TalonFX getBackLeftSteerMotor() {
         if(backLeftSteerMotor == null) {
-            backLeftSteerMotor = new TalonFX(constants.BACK_LEFT_STEER_PORT);
+            backLeftSteerMotor = new WPI_TalonFX(constants.BACK_LEFT_STEER_PORT);
         }
         return backLeftSteerMotor;
     }
 
-    public TalonFX getBackRightSteerMotor() {
+    public WPI_TalonFX getBackRightSteerMotor() {
         if(backRightSteerMotor == null) {
-            backRightSteerMotor = new TalonFX(constants.BACK_RIGHT_STEER_PORT);
+            backRightSteerMotor = new WPI_TalonFX(constants.BACK_RIGHT_STEER_PORT);
         }
         return backRightSteerMotor;
     }
 
-    public TalonFX getFrontLeftDriveMotor() {
+    public WPI_TalonFX getFrontLeftDriveMotor() {
         if(frontLeftDriveMotor == null) {
-            frontLeftDriveMotor = new TalonFX(constants.FRONT_LEFT_DRIVE_PORT);
+            frontLeftDriveMotor = new WPI_TalonFX(constants.FRONT_LEFT_DRIVE_PORT);
         }
         return frontLeftDriveMotor;
     }
 
-    public TalonFX getFrontRightDriveMotor() {
+    public WPI_TalonFX getFrontRightDriveMotor() {
         if(frontRightDriveMotor == null) {
-            frontRightDriveMotor = new TalonFX(constants.FRONT_RIGHT_DRIVE_PORT);
+            frontRightDriveMotor = new WPI_TalonFX(constants.FRONT_RIGHT_DRIVE_PORT);
         }
         return frontRightDriveMotor;
     }
 
-    public TalonFX getBackLeftDriveMotor() {
+    public WPI_TalonFX getBackLeftDriveMotor() {
         if(backLeftDriveMotor == null) {
-            backLeftDriveMotor = new TalonFX(constants.BACK_LEFT_DRIVE_PORT);
+            backLeftDriveMotor = new WPI_TalonFX(constants.BACK_LEFT_DRIVE_PORT);
         }
         return backLeftDriveMotor;
     }
 
-    public TalonFX getBackRightDriveMotor() {
+    public WPI_TalonFX getBackRightDriveMotor() {
         if(backRightDriveMotor == null) {
-            backRightDriveMotor = new TalonFX(constants.BACK_RIGHT_DRIVE_PORT);
+            backRightDriveMotor = new WPI_TalonFX(constants.BACK_RIGHT_DRIVE_PORT);
         }
         return backRightDriveMotor;
     }
@@ -142,5 +146,12 @@ public class ApplicationContext {
             controller = new Joystick(0);
         }
         return controller;
+    }
+
+    public Field2d getM_fieldSim() {
+        if (m_fieldSim == null) {
+            m_fieldSim = new Field2d();
+        }
+        return m_fieldSim;
     }
 }

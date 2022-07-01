@@ -6,6 +6,7 @@ import com.team2073.robot.Command.Drive.DriveCommand;
 import com.team2073.robot.Subsystems.Drive.DrivetrainSubsystem;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.simulation.BatterySim;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -36,6 +37,15 @@ public class RobotDelegate extends AbstractRobotDelegate {
     }
 
     @Override
+    public void simulationPeriodic() {
+    }
+
+    @Override
+    public void simulationInit() {
+        SmartDashboard.putData("Field", appCTX.getM_fieldSim());
+    }
+
+    @Override
     public void teleopInit() {
         teleopDrive();
     }
@@ -44,20 +54,22 @@ public class RobotDelegate extends AbstractRobotDelegate {
     public void robotPeriodic() {
         CommandScheduler.getInstance().run();
         if (DriverStation.isDisabled()) {
-            autonomous = autonRun.getSelected();
+//            autonomous = autonRun.getSelected();
         }
 
         if (DriverStation.isAutonomous() && DriverStation.isEnabled()) {
             if (started == false) {
                 if (autonomous == AutoRun.Test){
+                    System.out.println("starting");
                     new Test().start();
+                    started = true;
                 }
             }
         }
     }
 
     private void teleopDrive() {
-        new DriveCommand(drivetrain, controller);
+        new DriveCommand(drivetrain, controller).start();
     }
 
     public enum AutoRun {

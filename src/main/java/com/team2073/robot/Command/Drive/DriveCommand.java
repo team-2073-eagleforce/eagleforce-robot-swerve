@@ -7,7 +7,7 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
-public class DriveCommand extends CommandBase {
+public class DriveCommand extends AbstractLoggingCommand {
     private ApplicationContext appCTX = ApplicationContext.getInstance();
 
     private Joystick controller;
@@ -15,12 +15,11 @@ public class DriveCommand extends CommandBase {
 
     public DriveCommand(DrivetrainSubsystem drivetrain, Joystick controller) {
         this.drivetrain = drivetrain;
-
         this.controller = controller;
     }
 
     @Override
-    public void execute() {
+    public void executeDelegate() {
         final double xSpeed = -controller.getRawAxis(0) * DrivetrainSubsystem.maxSpeed;
         final double ySpeed = -controller.getRawAxis(1) * DrivetrainSubsystem.maxSpeed;
         final double rot = -controller.getRawAxis(3) * DrivetrainSubsystem.maxAngularSpeed;
@@ -30,4 +29,8 @@ public class DriveCommand extends CommandBase {
         drivetrain.drive(xSpeed, ySpeed, rot, true, calibrate);
     }
 
+    @Override
+    public boolean isFinishedDelegate() {
+        return false;
+    }
 }
