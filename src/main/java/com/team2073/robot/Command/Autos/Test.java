@@ -4,7 +4,6 @@ import com.team2073.robot.ApplicationContext;
 import com.team2073.robot.Command.Drive.StopDriveCommand;
 import com.team2073.robot.Command.Drive.SwerveAutoCommand;
 import com.team2073.robot.Command.Drive.SwerveAutoCommand.*;
-import com.team2073.robot.Command.Q;
 import com.team2073.robot.Subsystems.Drive.DrivetrainSubsystem;
 import edu.wpi.first.wpilibj.command.CommandGroup;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -16,7 +15,7 @@ public class Test extends CommandGroup {
     private DrivetrainSubsystem driveSubsystem = appCTX.getDrivetrainSubsystem();
 
     public Test() {
-        addSequential(new SwerveAutoCommand(DrivetrainSubsystem.AUTO_PATHS_SWERVE.TEST_PATH_2.getTraj(), driveSubsystem));
+//        addSequential(new SwerveAutoCommand(DrivetrainSubsystem.AUTO_PATHS_SWERVE.TEST_PATH_2.getTraj(), driveSubsystem));
         addSequential(new StopDriveCommand());
     }
 }

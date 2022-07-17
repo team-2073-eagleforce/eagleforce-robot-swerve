@@ -5,6 +5,6 @@ import com.team2073.common.robot.RobotApplication;
 
 public class Main {
     public static void main(String... args) {
-        RobotApplication.start(() -> new RobotDelegate(.01));
+        RobotApplication.start(() -> new RobotDelegate(.04));
     }
 }

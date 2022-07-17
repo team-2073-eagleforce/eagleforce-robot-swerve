@@ -6,6 +6,9 @@ package com.team2073.robot.Command.Drive;
 
 import static edu.wpi.first.wpilibj.util.ErrorMessages.requireNonNullParam;
 
+import com.ctre.phoenix.sensors.PigeonIMU;
+import com.pathplanner.lib.PathPlannerTrajectory;
+import com.team2073.robot.ApplicationContext;
 import com.team2073.robot.Subsystems.Drive.DrivetrainSubsystem;
 import edu.wpi.first.math.controller.HolonomicDriveController;
 import edu.wpi.first.math.controller.PIDController;
@@ -48,6 +51,7 @@ public class SwerveAutoCommand extends Command {
     private final HolonomicDriveController m_controller;
     private final Consumer<SwerveModuleState[]> m_outputModuleStates;
     private final Supplier<Rotation2d> m_desiredRotation;
+    private PigeonIMU gyro = ApplicationContext.getInstance().getGyro();
 
     /**
      * Constructs a new SwerveControllerCommand that when executed will follow the provided
@@ -71,7 +75,7 @@ public class SwerveAutoCommand extends Command {
      */
     @SuppressWarnings("ParameterName")
     public SwerveAutoCommand(
-            Trajectory trajectory,
+            PathPlannerTrajectory trajectory,
             Supplier<Pose2d> pose,
             SwerveDriveKinematics kinematics,
             PIDController xController,
@@ -122,7 +126,7 @@ public class SwerveAutoCommand extends Command {
      */
     @SuppressWarnings("ParameterName")
     public SwerveAutoCommand(
-            Trajectory trajectory,
+            PathPlannerTrajectory trajectory,
             Supplier<Pose2d> pose,
             SwerveDriveKinematics kinematics,
             PIDController xController,
@@ -143,15 +147,32 @@ public class SwerveAutoCommand extends Command {
                 requirements);
     }
 
-    public SwerveAutoCommand(Trajectory traj, DrivetrainSubsystem drivetrainSubsystem) {
+    public SwerveAutoCommand(PathPlannerTrajectory traj, DrivetrainSubsystem drivetrainSubsystem) {
         this(traj,
                 drivetrainSubsystem::getPose,
                 kinematics,
                 new PIDController(kPXController,0,0),
                 new PIDController(kPYController,0,0),
                 new ProfiledPIDController(kPThetaController,0,0,kThetaControllerConstraints),
+                () -> Rotation2d.fromDegrees(90d),
                 drivetrainSubsystem::setModuleStates,
                 drivetrainSubsystem);
+
+//        m_trajectory = requireNonNullParam(traj, "trajectory", "SwerveControllerCommand");
+//        m_pose = requireNonNullParam(drivetrainSubsystem::getPose, "pose", "SwerveControllerCommand");
+//        m_kinematics = requireNonNullParam(kinematics, "kinematics", "SwerveControllerCommand");
+//
+//        m_controller =
+//                new HolonomicDriveController(
+//                        requireNonNullParam(xController, "xController", "SwerveControllerCommand"),
+//                        requireNonNullParam(yController, "xController", "SwerveControllerCommand"),
+//                        requireNonNullParam(thetaController, "thetaController", "SwerveControllerCommand"));
+//
+//        m_outputModuleStates =
+//                requireNonNullParam(outputModuleStates, "frontLeftOutput", "SwerveControllerCommand");
+//
+
+        drivetrainSubsystem.resetOdometry(traj.getInitialPose());
     }
 
     @Override

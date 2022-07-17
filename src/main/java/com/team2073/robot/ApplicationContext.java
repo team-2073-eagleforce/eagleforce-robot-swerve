@@ -143,4 +143,11 @@ public class ApplicationContext {
         }
         return controller;
     }
+
+    public PigeonIMU getGyro() {
+        if (gyro == null){
+            gyro = new PigeonIMU(17);
+        }
+        return gyro;
+    }
 }
