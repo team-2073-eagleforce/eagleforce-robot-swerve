@@ -16,6 +16,7 @@ public class RobotDelegate extends AbstractRobotDelegate {
     private ApplicationContext appCTX = ApplicationContext.getInstance();
     private Joystick controller = appCTX.getController();
     private DrivetrainSubsystem drivetrain = appCTX.getDrivetrainSubsystem();
+    private Test test = new Test();
     private AutoRun autonomous;
     private SendableChooser<AutoRun> autonRun;
     boolean started = false;
@@ -53,11 +54,17 @@ public class RobotDelegate extends AbstractRobotDelegate {
             if (started == false) {
                 if (autonomous == AutoRun.Test){
                     System.out.println("sahdhkasdjkashkjdasjkdjaks");
-                    new Test().start();
+                    test.start();
+//                    test.schedule();
+//                    CommandScheduler.getInstance().run();
                     started = true;
                 }
             }
         }
+    }
+
+    @Override
+    public void autonomousInit() {
     }
 
     private void teleopDrive() {

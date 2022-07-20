@@ -1,5 +1,6 @@
 package com.team2073.robot.Subsystems.Drive;
 
+import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.commands.PPSwerveControllerCommand;
 import com.team2073.common.periodic.AsyncPeriodicRunnable;
 import com.team2073.robot.ApplicationContext;
@@ -20,6 +21,7 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
+import java.nio.file.Path;
 import java.util.List;
 
 import static com.team2073.robot.AppConstants.DriveConstants.*;
@@ -28,7 +30,7 @@ import static com.team2073.robot.AppConstants.AutoConstants.*;
 public class DrivetrainSubsystem extends SubsystemBase implements AsyncPeriodicRunnable {
     ApplicationContext appCTX = ApplicationContext.getInstance();
 
-    public static double maxSpeedMeters = Units.feetToMeters(13.6);
+    public static double maxSpeedMeters = Units.feetToMeters(16.2);
     public static double maxSpeedFeet = 13.6;
     public static double maxAngularSpeed = 2*Math.PI;
 
@@ -42,9 +44,7 @@ public class DrivetrainSubsystem extends SubsystemBase implements AsyncPeriodicR
     public PigeonIMU gyro = appCTX.getGyro();
 
 
-
-
-    private SwerveDriveOdometry m_odometry = new SwerveDriveOdometry(kinematics, Rotation2d.fromDegrees(gyro.getFusedHeading()));
+    private SwerveDriveOdometry m_odometry = new SwerveDriveOdometry(kinematics, Rotation2d.fromDegrees(getHeading()));
 
     private SwerveModule[] modules = new SwerveModule[] {
             new SwerveModule(appCTX.getFrontLeftDriveMotor(), appCTX.getFrontLeftSteerMotor(), appCTX.getFrontLeftEncoder(), frontLeftOffset),
@@ -54,6 +54,7 @@ public class DrivetrainSubsystem extends SubsystemBase implements AsyncPeriodicR
     };
 
     public DrivetrainSubsystem(){
+        gyro.setYaw(0);
 //        frontLeft = tuning.addNumber("front left", modules[0]::getDegreeHeading);
 //        frontRight = tuning.addNumber("front right", modules[1]::getDegreeHeading);
 //        backLeft = tuning.addNumber("back left", modules[2]::getDegreeHeading);
@@ -63,12 +64,12 @@ public class DrivetrainSubsystem extends SubsystemBase implements AsyncPeriodicR
 
     @Override
     public void onPeriodicAsync() {
-        m_odometry.update(Rotation2d.fromDegrees(gyro.getFusedHeading()),modules[0].getState(),modules[1].getState(),modules[2].getState(),modules[3].getState());
+        m_odometry.update(Rotation2d.fromDegrees(getHeading()),modules[0].getState(),modules[1].getState(),modules[2].getState(),modules[3].getState());
     }
 
     public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative, boolean calibrateGyro) {
         if (calibrateGyro) {
-            gyro.setFusedHeading(0);
+            gyro.setYaw(0);
         }
 
         SwerveModuleState[] states = kinematics.toSwerveModuleStates(
@@ -93,7 +94,7 @@ public class DrivetrainSubsystem extends SubsystemBase implements AsyncPeriodicR
     }
 
     public void resetOdometry(Pose2d pose) {
-        m_odometry.resetPosition(pose, Rotation2d.fromDegrees(gyro.getFusedHeading()));
+        m_odometry.resetPosition(pose, Rotation2d.fromDegrees(getHeading()));
     }
 
     public void zeroHeading() {
@@ -101,7 +102,7 @@ public class DrivetrainSubsystem extends SubsystemBase implements AsyncPeriodicR
     }
 
     public double getHeading() {
-        return Math.IEEEremainder(gyro.getFusedHeading(),360);
+        return Math.IEEEremainder(gyro.getYaw(),360);
     }
 
     public void setModuleStates(SwerveModuleState[] desiredStates) {
@@ -113,28 +114,17 @@ public class DrivetrainSubsystem extends SubsystemBase implements AsyncPeriodicR
         }
     }
 
-    public enum AUTO_PATHS_SWERVE {
-        TEST_PATH(TrajectoryGenerator.generateTrajectory(
-                List.of(
-                        new Pose2d(0,0, Rotation2d.fromDegrees(0)),
-                        new Pose2d(1,1, Rotation2d.fromDegrees(30)),
-                        new Pose2d(2,-1, Rotation2d.fromDegrees(60)),
-                        new Pose2d(3,0, Rotation2d.fromDegrees(90))),
-                config.setReversed(false))),
-        TEST_PATH_2(TrajectoryGenerator.generateTrajectory(
-                List.of(
-                        new Pose2d(0,0, Rotation2d.fromDegrees(0d)),
-                        new Pose2d(Units.inchesToMeters(36d),0, Rotation2d.fromDegrees(0))),
-                config.setReversed(false)));
-
-        private Trajectory traj;
-
-        AUTO_PATHS_SWERVE(Trajectory traj) {
-            this.traj = traj;
-        }
-
-        public Trajectory getTraj() {
-            return traj;
-        }
-    }
+//    public enum AUTO_PATHS_SWERVE {
+//        TEST_PATH(testPath);
+//
+//        private PathPlannerTrajectory traj;
+//
+//        AUTO_PATHS_SWERVE(PathPlannerTrajectory traj) {
+//            this.traj = traj;
+//        }
+//
+//        public PathPlannerTrajectory getTraj() {
+//            return traj;
+//        }
+//    }
 }
