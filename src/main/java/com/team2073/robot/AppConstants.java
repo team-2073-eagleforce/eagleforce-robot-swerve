@@ -1,5 +1,6 @@
 package com.team2073.robot;
 
+import com.team2073.common.util.ConversionUtil;
 import com.team2073.robot.Subsystems.Drive.DrivetrainSubsystem;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -44,7 +45,7 @@ public final class AppConstants {
     public static final class DriveConstants {
         public static final boolean kGyroReversed = false;
         //@TODO Change later
-        public static final double GEAR_RATIO = 6.83d;
+        public static final double GEAR_RATIO = 1/6.86;
 
         //@TODO Change later
         public static final double ksVolts = 0.10726;
@@ -59,6 +60,23 @@ public final class AppConstants {
                 new Translation2d(Units.inchesToMeters(-12), Units.inchesToMeters(12)),
                 new Translation2d(Units.inchesToMeters(-12), Units.inchesToMeters(-12)));
 
+        public static final double kTrackWidth = ConversionUtil.inchesToMeters(24);
+        // Distance between centers of right and left wheels on robot
+        public static final double kWheelBase = ConversionUtil.inchesToMeters(24);;
+        // Distance between front and back wheels on robot
+
+        private static final Translation2d kFrontLeftModulePosition = new Translation2d(kWheelBase / 2, kTrackWidth / 2);
+        private static final Translation2d kFrontRightModulePosition = new Translation2d(kWheelBase / 2, -kTrackWidth / 2);
+        private static final Translation2d kBackLeftModulePosition = new Translation2d(-kWheelBase / 2, kTrackWidth / 2);
+        private static final Translation2d kBackRightModulePosition = new Translation2d(-kWheelBase / 2, -kTrackWidth / 2);
+
+        public static final Translation2d[] kModulePositions = {
+                kFrontLeftModulePosition,
+                kFrontRightModulePosition,
+                kBackLeftModulePosition,
+                kBackRightModulePosition
+        };
+
         public static TrajectoryConfig config =
                 new TrajectoryConfig(AutoConstants.kMaxSpeedMetersPerSecond,
                         AutoConstants.kMaxAccelerationMetersPerSecondSquared)
@@ -67,17 +85,17 @@ public final class AppConstants {
 
     public static final class AutoConstants {
 
-        public static final double kMaxSpeedMetersPerSecond = 3;
+        public static final double kMaxSpeedMetersPerSecond = 2.5;
         public static final double kMaxAccelerationMetersPerSecondSquared = 3;
-        public static final double kMaxAngularSpeedRadiansPerSecond = 2 * Math.PI;
-        public static final double kMaxAngularSpeedRadiansPerSecondSquared = Math.PI;
+        public static final double kMaxAngularSpeedRadiansPerSecond = 4.75 * Math.PI;
+        public static final double kMaxAngularSpeedRadiansPerSecondSquared = 3.6 * Math.PI;
 
         //@TODO Change later
-        public static final double kPXController = 0.1;
+        public static final double kPXController = 0.2;
         //@TODO Change later
-        public static final double kPYController = 0.1;
+        public static final double kPYController = 0.4;
         //@TODO Change later
-        public static final double kPThetaController = .6;
+        public static final double kPThetaController = 10;
 
         // Constraint for the motion profiled robot angle controller
         public static final TrapezoidProfile.Constraints kThetaControllerConstraints =

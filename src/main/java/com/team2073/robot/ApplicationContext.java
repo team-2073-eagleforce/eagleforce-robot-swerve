@@ -7,6 +7,7 @@ import com.team2073.common.CommonConstants;
 import com.team2073.robot.Subsystems.Drive.DrivetrainSubsystem;
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 
 public class ApplicationContext {
     private static ApplicationContext instance;
@@ -36,6 +37,8 @@ public class ApplicationContext {
     private DrivetrainSubsystem drivetrainSubsystem;
 
     private Joystick controller;
+
+    private Field2d field2d;
 
     private AppConstants constants = AppConstants.getInstance();
 
@@ -149,5 +152,12 @@ public class ApplicationContext {
             gyro = new PigeonIMU(17);
         }
         return gyro;
+    }
+
+    public Field2d getField2d() {
+        if (field2d == null) {
+            field2d = new Field2d();
+        }
+        return field2d;
     }
 }

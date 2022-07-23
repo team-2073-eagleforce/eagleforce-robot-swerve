@@ -83,16 +83,11 @@ public class SwerveAutoCommand extends Command {
     }
 
     @Override
-    @SuppressWarnings("LocalVariableName")
     public void execute() {
         double curTime = m_timer.get();
         PathPlannerTrajectory.PathPlannerState desiredState = (PathPlannerTrajectory.PathPlannerState) m_trajectory.sample(curTime);
-        SmartDashboard.putNumber("chassis spin", m_controller.calculate(m_pose.get(), desiredState, desiredState.holonomicRotation).omegaRadiansPerSecond);
-        SmartDashboard.putNumber("chassis x speed", m_controller.calculate(m_pose.get(), desiredState, desiredState.holonomicRotation).vxMetersPerSecond);
-        SmartDashboard.putNumber("chassis y speed", m_controller.calculate(m_pose.get(), desiredState, desiredState.holonomicRotation).vyMetersPerSecond);
         var targetChassisSpeeds = m_controller.calculate(m_pose.get(), desiredState, desiredState.holonomicRotation);
-        var chassisSpeeds = edu.wpi.first.math.kinematics.ChassisSpeeds.fromFieldRelativeSpeeds(targetChassisSpeeds.vxMetersPerSecond, targetChassisSpeeds.vyMetersPerSecond, targetChassisSpeeds.omegaRadiansPerSecond, Rotation2d.fromDegrees(gyro.getYaw()));
-        var targetModuleStates = m_kinematics.toSwerveModuleStates(chassisSpeeds);
+        var targetModuleStates = m_kinematics.toSwerveModuleStates(targetChassisSpeeds);
 
         m_outputModuleStates.accept(targetModuleStates);
     }

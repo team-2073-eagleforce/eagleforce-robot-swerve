@@ -18,6 +18,7 @@ import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -28,12 +29,14 @@ import java.util.List;
 import static com.team2073.robot.AppConstants.DriveConstants.*;
 import static com.team2073.robot.AppConstants.AutoConstants.*;
 
-public class DrivetrainSubsystem extends SubsystemBase implements AsyncPeriodicRunnable {
+public class DrivetrainSubsystem extends SubsystemBase implements AsyncPeriodicRunnable  {
     ApplicationContext appCTX = ApplicationContext.getInstance();
 
     public static double maxSpeedMeters = Units.feetToMeters(16.2);
     public static double maxSpeedFeet = 13.6;
     public static double maxAngularSpeed = 2*Math.PI;
+
+    private Field2d field2d = appCTX.getField2d();
 
     private ShuffleboardTab tuning = Shuffleboard.getTab("tuning");
 
@@ -55,30 +58,67 @@ public class DrivetrainSubsystem extends SubsystemBase implements AsyncPeriodicR
     };
 
     public DrivetrainSubsystem(){
+        autoRegisterWithPeriodicRunner();
         gyro.setYaw(0);
+        SmartDashboard.putData("Field2d", field2d);
+        SmartDashboard.putNumber("Pose", getPose().getTranslation().getX());
     }
 
+//    @Override
+//    public void periodic() {
+//
+//        m_odometry.update(Rotation2d.fromDegrees(gyro.getYaw()),modules[0].getState(),modules[1].getState(),modules[2].getState(),modules[3].getState());
+//
+//
+//        field2d.setRobotPose(getPose());
+//
+//        for ( int i = 0; i < modules.length; i++) {
+//
+//            var modulePositionFromChassis = kModulePositions[i]
+//                    .rotateBy(Rotation2d.fromDegrees(getHeading()))
+//                    .plus(getPose().getTranslation());
+//
+////            m_modulePose[i] = new Pose2d(modulePositionFromChassis,modules[i].getState().angle.plus(getPose().getRotation()));
+//            m_modulePose[i] = new Pose2d(modulePositionFromChassis,modules[i].getAngle());
+//        }
+//        field2d.getObject("Swerve Modules").setPoses(m_modulePose);
+//
+//    }
 
     @Override
     public void onPeriodicAsync() {
+        SmartDashboard.putNumber("X pos", getPose().getX());
+        SmartDashboard.putNumber("y pos", getPose().getY());
+        SmartDashboard.putNumber("heading", getPose().getRotation().getDegrees());
         m_odometry.update(Rotation2d.fromDegrees(gyro.getYaw()),modules[0].getState(),modules[1].getState(),modules[2].getState(),modules[3].getState());
+
+
+        field2d.setRobotPose(getPose());
+
+        for ( int i = 0; i < modules.length; i++) {
+
+            var modulePositionFromChassis = kModulePositions[i]
+                    .rotateBy(Rotation2d.fromDegrees(getHeading()))
+                    .plus(getPose().getTranslation());
+
+//            m_modulePose[i] = new Pose2d(modulePositionFromChassis,modules[i].getState().angle.plus(getPose().getRotation()));
+            m_modulePose[i] = new Pose2d(modulePositionFromChassis,modules[i].getAngle());
+        }
+        field2d.getObject("Swerve Modules").setPoses(m_modulePose);
+//        m_odometry.update(Rotation2d.fromDegrees(gyro.getYaw()),modules[0].getState(),modules[1].getState(),modules[2].getState(),modules[3].getState());
     }
 
     public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative, boolean calibrateGyro) {
         if (calibrateGyro) {
         }
-        SmartDashboard.putNumber("gyro Angle", gyro.getFusedHeading());
         SwerveModuleState[] states = kinematics.toSwerveModuleStates(
                 fieldRelative
                     ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, Rotation2d.fromDegrees(gyro.getYaw()))
                     : new ChassisSpeeds(xSpeed, ySpeed, rot));
-        SmartDashboard.putNumber("Chassis Speed", kinematics.toChassisSpeeds(states[0], states[1], states[2], states[3]).vxMetersPerSecond/maxSpeedMeters);
         SwerveDriveKinematics.desaturateWheelSpeeds(states, maxSpeedMeters);
         for (int i = 0; i < modules.length; i++) {
             SwerveModule module = modules[i];
             SwerveModuleState state = states[i];
-            SmartDashboard.putNumber(String.valueOf(i), state.speedMetersPerSecond);
-            SmartDashboard.putNumber("state: " + String.valueOf(i), state.angle.getDegrees());
             module.setState(state);
         }
     }
@@ -108,4 +148,29 @@ public class DrivetrainSubsystem extends SubsystemBase implements AsyncPeriodicR
             module.setState(desiredStates[i]);
         }
     }
+
+    Pose2d[] m_modulePose = {
+            new Pose2d(),
+            new Pose2d(),
+            new Pose2d(),
+            new Pose2d()
+    };
+
+    @Override
+    public void simulationPeriodic() {
+        field2d.setRobotPose(getPose());
+
+        for ( int i = 0; i < modules.length; i++) {
+
+            var modulePositionFromChassis = kModulePositions[i]
+                    .rotateBy(Rotation2d.fromDegrees(getHeading()))
+                    .plus(getPose().getTranslation());
+
+//            m_modulePose[i] = new Pose2d(modulePositionFromChassis,modules[i].getState().angle.plus(getPose().getRotation()));
+            m_modulePose[i] = new Pose2d(modulePositionFromChassis,modules[i].getAngle());
+        }
+        field2d.getObject("Swerve Modules").setPoses(m_modulePose);
+    }
+
+
 }

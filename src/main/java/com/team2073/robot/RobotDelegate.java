@@ -15,7 +15,7 @@ public class RobotDelegate extends AbstractRobotDelegate {
     private OperatorInterface oi = new OperatorInterface();
     private ApplicationContext appCTX = ApplicationContext.getInstance();
     private Joystick controller = appCTX.getController();
-    private DrivetrainSubsystem drivetrain = appCTX.getDrivetrainSubsystem();
+    private DrivetrainSubsystem drivetrain;
     private Test test = new Test();
     private AutoRun autonomous;
     private SendableChooser<AutoRun> autonRun;
@@ -27,6 +27,7 @@ public class RobotDelegate extends AbstractRobotDelegate {
 
     @Override
     public void robotInit() {
+        drivetrain = appCTX.getDrivetrainSubsystem();
         oi.init();
         autonRun = new SendableChooser<>();
         autonomous = AutoRun.Test;
@@ -46,6 +47,7 @@ public class RobotDelegate extends AbstractRobotDelegate {
 
     @Override
     public void robotPeriodic() {
+
         if (DriverStation.isDisabled()) {
             autonomous = autonRun.getSelected();
         }

@@ -121,6 +121,8 @@ dependencies {
 }
 
 
+wpi.sim.addGui().defaultEnabled = true
+wpi.sim.addDriverstation()
 
 wrapper {
     gradleVersion = "7.3.3"

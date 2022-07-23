@@ -98,7 +98,7 @@ public class SwerveModule {
     }
 
     public SwerveModuleState getState() {
-        return new SwerveModuleState(((driveMotor.getSelectedSensorVelocity() * GEAR_RATIO * 10)/ 2048 * ConversionUtil.inchesToMeters(4 * Math.PI)), getAngle());
+        return new SwerveModuleState(((-driveMotor.getSelectedSensorVelocity() * GEAR_RATIO * 10)/ 2048 * ConversionUtil.inchesToMeters(4 * Math.PI)), getAngle());
     }
 
     public double getCurrentPosition() {

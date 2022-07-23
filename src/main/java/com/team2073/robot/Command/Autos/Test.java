@@ -27,7 +27,7 @@ public class Test extends CommandGroup {
     private double maxSpeed = AppConstants.AutoConstants.kMaxSpeedMetersPerSecond;
     private double maxAcceleration = AppConstants.AutoConstants.kMaxAccelerationMetersPerSecondSquared;
 
-    PathPlannerTrajectory testPath = PathPlanner.loadPath("Test", maxSpeed, maxAcceleration);
+    PathPlannerTrajectory testPath = PathPlanner.loadPath("S-Curve", maxSpeed, maxAcceleration);
 
     public Test() {
         addSequential(new SwerveAutoCommand(testPath, driveSubsystem));

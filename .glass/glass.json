@@ -1,0 +1,47 @@
+{
+  "NetworkTables": {
+    "Shuffleboard": {
+      "open": true
+    },
+    "SmartDashboard": {
+      "open": true
+    },
+    "types": {
+      "/FMSInfo": "FMSInfo",
+      "/LiveWindow/Ungrouped/PIDController[1]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[2]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[3]": "PIDController",
+      "/LiveWindow/Ungrouped/Scheduler": "Scheduler",
+      "/SmartDashboard/Field2d": "Field2d",
+      "/SmartDashboard/SendableChooser[0]": "String Chooser"
+    },
+    "windows": {
+      "/SmartDashboard/Field2d": {
+        "Robot": {
+          "length": 0.6096000075340271,
+          "width": 0.6096000075340271
+        },
+        "Swerve Modules": {
+          "length": 0.05079999938607216,
+          "width": 0.05079999938607216
+        },
+        "height": 8.10260009765625,
+        "image": "C:\\Users\\EthanSee\\Downloads\\fieldFlipped.png",
+        "units": "meters",
+        "width": 16.484600067138672,
+        "window": {
+          "visible": true
+        }
+      },
+      "/SmartDashboard/SendableChooser[0]": {
+        "window": {
+          "visible": true
+        }
+      }
+    }
+  },
+  "NetworkTables Settings": {
+    "mode": "Client",
+    "serverTeam": "2073"
+  }
+}
