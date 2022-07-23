@@ -61,7 +61,7 @@ public class DrivetrainSubsystem extends SubsystemBase implements AsyncPeriodicR
 
     @Override
     public void onPeriodicAsync() {
-        m_odometry.update(Rotation2d.fromDegrees(getHeading()),modules[0].getState(),modules[1].getState(),modules[2].getState(),modules[3].getState());
+        m_odometry.update(Rotation2d.fromDegrees(gyro.getYaw()),modules[0].getState(),modules[1].getState(),modules[2].getState(),modules[3].getState());
     }
 
     public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative, boolean calibrateGyro) {
@@ -97,7 +97,7 @@ public class DrivetrainSubsystem extends SubsystemBase implements AsyncPeriodicR
     }
 
     public double getHeading() {
-        return Math.IEEEremainder(gyro.getFusedHeading(),360);
+        return Math.IEEEremainder(gyro.getYaw(),360);
     }
 
     public void setModuleStates(SwerveModuleState[] desiredStates) {

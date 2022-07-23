@@ -8,6 +8,7 @@ import static edu.wpi.first.wpilibj.util.ErrorMessages.requireNonNullParam;
 
 import com.ctre.phoenix.sensors.PigeonIMU;
 import com.pathplanner.lib.PathPlannerTrajectory;
+import com.team2073.robot.AppConstants;
 import com.team2073.robot.ApplicationContext;
 import com.team2073.robot.Subsystems.Drive.DrivetrainSubsystem;
 import edu.wpi.first.math.controller.HolonomicDriveController;
@@ -15,6 +16,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.Trajectory;
@@ -53,6 +55,7 @@ public class SwerveAutoCommand extends Command {
     private final Consumer<SwerveModuleState[]> m_outputModuleStates;
     private final ProfiledPIDController thetaController;
 //        private final Supplier<Rotation2d> m_desiredRotation;
+    private final PigeonIMU gyro = ApplicationContext.getInstance().getGyro();
 
     public SwerveAutoCommand(PathPlannerTrajectory traj, DrivetrainSubsystem drivetrainSubsystem) {
         m_trajectory = requireNonNullParam(traj, "trajectory", "SwerveControllerCommand");
@@ -84,9 +87,12 @@ public class SwerveAutoCommand extends Command {
     public void execute() {
         double curTime = m_timer.get();
         PathPlannerTrajectory.PathPlannerState desiredState = (PathPlannerTrajectory.PathPlannerState) m_trajectory.sample(curTime);
-        SmartDashboard.putNumber("spin", thetaController.calculate(m_pose.get().getRotation().getRadians(), desiredState.holonomicRotation.getRadians()));
+        SmartDashboard.putNumber("chassis spin", m_controller.calculate(m_pose.get(), desiredState, desiredState.holonomicRotation).omegaRadiansPerSecond);
+        SmartDashboard.putNumber("chassis x speed", m_controller.calculate(m_pose.get(), desiredState, desiredState.holonomicRotation).vxMetersPerSecond);
+        SmartDashboard.putNumber("chassis y speed", m_controller.calculate(m_pose.get(), desiredState, desiredState.holonomicRotation).vyMetersPerSecond);
         var targetChassisSpeeds = m_controller.calculate(m_pose.get(), desiredState, desiredState.holonomicRotation);
-        var targetModuleStates = m_kinematics.toSwerveModuleStates(targetChassisSpeeds);
+        var chassisSpeeds = edu.wpi.first.math.kinematics.ChassisSpeeds.fromFieldRelativeSpeeds(targetChassisSpeeds.vxMetersPerSecond, targetChassisSpeeds.vyMetersPerSecond, targetChassisSpeeds.omegaRadiansPerSecond, Rotation2d.fromDegrees(gyro.getYaw()));
+        var targetModuleStates = m_kinematics.toSwerveModuleStates(chassisSpeeds);
 
         m_outputModuleStates.accept(targetModuleStates);
     }
