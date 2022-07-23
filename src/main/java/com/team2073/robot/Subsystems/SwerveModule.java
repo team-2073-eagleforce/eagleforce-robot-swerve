@@ -94,7 +94,7 @@ public class SwerveModule {
 
         double feetPerSecond = Units.metersToFeet(state.speedMetersPerSecond);
 
-        driveMotor.set(TalonFXControlMode.PercentOutput, feetPerSecond/ DrivetrainSubsystem.maxSpeedFeet);
+        driveMotor.set(TalonFXControlMode.PercentOutput, -feetPerSecond/ DrivetrainSubsystem.maxSpeedFeet);
     }
 
     public SwerveModuleState getState() {

@@ -21,6 +21,7 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
+import javax.crypto.spec.PSource;
 import java.nio.file.Path;
 import java.util.List;
 
@@ -55,10 +56,6 @@ public class DrivetrainSubsystem extends SubsystemBase implements AsyncPeriodicR
 
     public DrivetrainSubsystem(){
         gyro.setYaw(0);
-//        frontLeft = tuning.addNumber("front left", modules[0]::getDegreeHeading);
-//        frontRight = tuning.addNumber("front right", modules[1]::getDegreeHeading);
-//        backLeft = tuning.addNumber("back left", modules[2]::getDegreeHeading);
-//        backRight = tuning.addNumber("back right", modules[3]::getDegreeHeading);
     }
 
 
@@ -69,22 +66,19 @@ public class DrivetrainSubsystem extends SubsystemBase implements AsyncPeriodicR
 
     public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative, boolean calibrateGyro) {
         if (calibrateGyro) {
-            gyro.setYaw(0);
         }
-
+        SmartDashboard.putNumber("gyro Angle", gyro.getFusedHeading());
         SwerveModuleState[] states = kinematics.toSwerveModuleStates(
                 fieldRelative
-                    ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, Rotation2d.fromDegrees(gyro.getFusedHeading()))
+                    ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, Rotation2d.fromDegrees(gyro.getYaw()))
                     : new ChassisSpeeds(xSpeed, ySpeed, rot));
+        SmartDashboard.putNumber("Chassis Speed", kinematics.toChassisSpeeds(states[0], states[1], states[2], states[3]).vxMetersPerSecond/maxSpeedMeters);
         SwerveDriveKinematics.desaturateWheelSpeeds(states, maxSpeedMeters);
         for (int i = 0; i < modules.length; i++) {
             SwerveModule module = modules[i];
             SwerveModuleState state = states[i];
-
-            SmartDashboard.putNumber(String.valueOf(i), modules[i].getRawAngle());
-            SmartDashboard.putNumber("state: " + String.valueOf(i), states[i].angle.getDegrees());
-            SmartDashboard.putNumber("gyro Angle", gyro.getFusedHeading());
-
+            SmartDashboard.putNumber(String.valueOf(i), state.speedMetersPerSecond);
+            SmartDashboard.putNumber("state: " + String.valueOf(i), state.angle.getDegrees());
             module.setState(state);
         }
     }
@@ -94,15 +88,16 @@ public class DrivetrainSubsystem extends SubsystemBase implements AsyncPeriodicR
     }
 
     public void resetOdometry(Pose2d pose) {
+//        gyro.setYaw(pose.getRotation().getDegrees());
         m_odometry.resetPosition(pose, Rotation2d.fromDegrees(getHeading()));
     }
 
     public void zeroHeading() {
-        gyro.setFusedHeading(0);
+//        gyro.setFusedHeading(0);
     }
 
     public double getHeading() {
-        return Math.IEEEremainder(gyro.getYaw(),360);
+        return Math.IEEEremainder(gyro.getFusedHeading(),360);
     }
 
     public void setModuleStates(SwerveModuleState[] desiredStates) {
@@ -113,18 +108,4 @@ public class DrivetrainSubsystem extends SubsystemBase implements AsyncPeriodicR
             module.setState(desiredStates[i]);
         }
     }
-
-//    public enum AUTO_PATHS_SWERVE {
-//        TEST_PATH(testPath);
-//
-//        private PathPlannerTrajectory traj;
-//
-//        AUTO_PATHS_SWERVE(PathPlannerTrajectory traj) {
-//            this.traj = traj;
-//        }
-//
-//        public PathPlannerTrajectory getTraj() {
-//            return traj;
-//        }
-//    }
 }

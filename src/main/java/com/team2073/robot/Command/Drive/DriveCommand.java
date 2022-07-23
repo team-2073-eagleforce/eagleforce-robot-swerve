@@ -24,6 +24,7 @@ public class DriveCommand extends AbstractLoggingCommand {
     @Override
     public void executeDelegate() {
         final double xSpeed = -MathUtil.applyDeadband(controller.getRawAxis(1), .1) * DrivetrainSubsystem.maxSpeedMeters;
+//        final double xSpeed = .1 * DrivetrainSubsystem.maxSpeedMeters;
         final double ySpeed = -MathUtil.applyDeadband(controller.getRawAxis(0),.1) * DrivetrainSubsystem.maxSpeedMeters;
         final double rot = -MathUtil.applyDeadband(controller.getRawAxis(4), .1) * DrivetrainSubsystem.maxAngularSpeed;
 
