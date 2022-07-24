@@ -16,6 +16,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
@@ -65,15 +66,12 @@ public class SwerveAutoCommand extends Command {
         thetaController.enableContinuousInput(-Math.PI, Math.PI);
         m_controller =
                 new HolonomicDriveController(
-                        requireNonNullParam(new PIDController(kPXController, 0, 0), "xController", "SwerveControllerCommand"),
-                        requireNonNullParam(new PIDController(kPYController, 0, 0), "xController", "SwerveControllerCommand"),
+                        requireNonNullParam(new PIDController(kPXController, 0, 0.005), "xController", "SwerveControllerCommand"),
+                        requireNonNullParam(new PIDController(kPYController, 0, 0.005), "xController", "SwerveControllerCommand"),
                         requireNonNullParam(thetaController, "thetaController", "SwerveControllerCommand"));
         m_controller.setTolerance(new Pose2d(0.25,0.25,new Rotation2d(0.10)));
 //        m_desiredRotation = () -> traj.getState(traj.getStates().size() - 1).holonomicRotation;
         m_outputModuleStates = requireNonNullParam(drivetrainSubsystem::setModuleStates, "frontLeftOutput", "SwerveControllerCommand");
-
-
-        drivetrainSubsystem.resetOdometry(traj.getInitialPose());
     }
 
     @Override

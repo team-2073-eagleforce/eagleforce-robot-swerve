@@ -59,39 +59,16 @@ public class DrivetrainSubsystem extends SubsystemBase implements AsyncPeriodicR
 
     public DrivetrainSubsystem(){
         autoRegisterWithPeriodicRunner();
-        gyro.setYaw(0);
         SmartDashboard.putData("Field2d", field2d);
-        SmartDashboard.putNumber("Pose", getPose().getTranslation().getX());
+//        gyro.setYaw(0);
     }
 
-//    @Override
-//    public void periodic() {
-//
-//        m_odometry.update(Rotation2d.fromDegrees(gyro.getYaw()),modules[0].getState(),modules[1].getState(),modules[2].getState(),modules[3].getState());
-//
-//
-//        field2d.setRobotPose(getPose());
-//
-//        for ( int i = 0; i < modules.length; i++) {
-//
-//            var modulePositionFromChassis = kModulePositions[i]
-//                    .rotateBy(Rotation2d.fromDegrees(getHeading()))
-//                    .plus(getPose().getTranslation());
-//
-////            m_modulePose[i] = new Pose2d(modulePositionFromChassis,modules[i].getState().angle.plus(getPose().getRotation()));
-//            m_modulePose[i] = new Pose2d(modulePositionFromChassis,modules[i].getAngle());
-//        }
-//        field2d.getObject("Swerve Modules").setPoses(m_modulePose);
-//
-//    }
 
     @Override
     public void onPeriodicAsync() {
-        SmartDashboard.putNumber("X pos", getPose().getX());
-        SmartDashboard.putNumber("y pos", getPose().getY());
-        SmartDashboard.putNumber("heading", getPose().getRotation().getDegrees());
         m_odometry.update(Rotation2d.fromDegrees(gyro.getYaw()),modules[0].getState(),modules[1].getState(),modules[2].getState(),modules[3].getState());
-
+        SmartDashboard.putNumber("Pose rot", getPose().getRotation().getDegrees());
+        SmartDashboard.putNumber("Yaw", gyro.getYaw());
 
         field2d.setRobotPose(getPose());
 
@@ -100,12 +77,9 @@ public class DrivetrainSubsystem extends SubsystemBase implements AsyncPeriodicR
             var modulePositionFromChassis = kModulePositions[i]
                     .rotateBy(Rotation2d.fromDegrees(getHeading()))
                     .plus(getPose().getTranslation());
-
-//            m_modulePose[i] = new Pose2d(modulePositionFromChassis,modules[i].getState().angle.plus(getPose().getRotation()));
             m_modulePose[i] = new Pose2d(modulePositionFromChassis,modules[i].getAngle());
         }
         field2d.getObject("Swerve Modules").setPoses(m_modulePose);
-//        m_odometry.update(Rotation2d.fromDegrees(gyro.getYaw()),modules[0].getState(),modules[1].getState(),modules[2].getState(),modules[3].getState());
     }
 
     public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative, boolean calibrateGyro) {
@@ -113,7 +87,7 @@ public class DrivetrainSubsystem extends SubsystemBase implements AsyncPeriodicR
         }
         SwerveModuleState[] states = kinematics.toSwerveModuleStates(
                 fieldRelative
-                    ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, Rotation2d.fromDegrees(gyro.getYaw()))
+                    ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, Rotation2d.fromDegrees(gyro.getYaw() + 180))
                     : new ChassisSpeeds(xSpeed, ySpeed, rot));
         SwerveDriveKinematics.desaturateWheelSpeeds(states, maxSpeedMeters);
         for (int i = 0; i < modules.length; i++) {
@@ -127,13 +101,10 @@ public class DrivetrainSubsystem extends SubsystemBase implements AsyncPeriodicR
         return m_odometry.getPoseMeters();
     }
 
-    public void resetOdometry(Pose2d pose) {
-//        gyro.setYaw(pose.getRotation().getDegrees());
+    public void resetOdometry(Pose2d pose, PathPlannerTrajectory trajectory) {
+        SmartDashboard.putNumber("init Pose rot", trajectory.getInitialPose().getRotation().getDegrees());
+        gyro.setYaw(trajectory.getInitialState().holonomicRotation.getDegrees());
         m_odometry.resetPosition(pose, Rotation2d.fromDegrees(getHeading()));
-    }
-
-    public void zeroHeading() {
-//        gyro.setFusedHeading(0);
     }
 
     public double getHeading() {
@@ -165,8 +136,6 @@ public class DrivetrainSubsystem extends SubsystemBase implements AsyncPeriodicR
             var modulePositionFromChassis = kModulePositions[i]
                     .rotateBy(Rotation2d.fromDegrees(getHeading()))
                     .plus(getPose().getTranslation());
-
-//            m_modulePose[i] = new Pose2d(modulePositionFromChassis,modules[i].getState().angle.plus(getPose().getRotation()));
             m_modulePose[i] = new Pose2d(modulePositionFromChassis,modules[i].getAngle());
         }
         field2d.getObject("Swerve Modules").setPoses(m_modulePose);

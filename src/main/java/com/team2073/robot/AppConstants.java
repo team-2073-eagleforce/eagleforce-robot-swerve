@@ -85,15 +85,15 @@ public final class AppConstants {
 
     public static final class AutoConstants {
 
-        public static final double kMaxSpeedMetersPerSecond = 2.5;
-        public static final double kMaxAccelerationMetersPerSecondSquared = 3;
+        public static final double kMaxSpeedMetersPerSecond = 2;
+        public static final double kMaxAccelerationMetersPerSecondSquared = 2.5;
         public static final double kMaxAngularSpeedRadiansPerSecond = 4.75 * Math.PI;
         public static final double kMaxAngularSpeedRadiansPerSecondSquared = 3.6 * Math.PI;
 
         //@TODO Change later
-        public static final double kPXController = 0.2;
+        public static final double kPXController = 0.1;
         //@TODO Change later
-        public static final double kPYController = 0.4;
+        public static final double kPYController = 0.2;
         //@TODO Change later
         public static final double kPThetaController = 10;
 
