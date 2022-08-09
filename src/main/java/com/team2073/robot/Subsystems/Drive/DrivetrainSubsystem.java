@@ -47,6 +47,8 @@ public class DrivetrainSubsystem extends SubsystemBase implements AsyncPeriodicR
 
     public PigeonIMU gyro = appCTX.getGyro();
 
+    private boolean isAngleLocked = false;
+
 
     private SwerveDriveOdometry m_odometry = new SwerveDriveOdometry(kinematics, Rotation2d.fromDegrees(getHeading()));
 
@@ -141,5 +143,11 @@ public class DrivetrainSubsystem extends SubsystemBase implements AsyncPeriodicR
         field2d.getObject("Swerve Modules").setPoses(m_modulePose);
     }
 
+    public void setIsAngleLocked(boolean locked) {
+        isAngleLocked = locked;
+    }
 
+    public boolean getIsAngleLocked() {
+        return isAngleLocked;
+    }
 }

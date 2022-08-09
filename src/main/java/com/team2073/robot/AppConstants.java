@@ -81,6 +81,9 @@ public final class AppConstants {
                 new TrajectoryConfig(AutoConstants.kMaxSpeedMetersPerSecond,
                         AutoConstants.kMaxAccelerationMetersPerSecondSquared)
                         .setKinematics(kinematics);
+
+        public static final TrapezoidProfile.Constraints kAngleControllerConstraints =
+                new TrapezoidProfile.Constraints(4.75*Math.PI, 3.6*Math.PI);
     }
 
     public static final class AutoConstants {
